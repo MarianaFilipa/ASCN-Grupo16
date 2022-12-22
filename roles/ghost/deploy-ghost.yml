@@ -1,0 +1,66 @@
+# Playbook to deploy Ghost and its components
+# Servidor:
+---
+- name: Update Packages Server
+  apt: 
+    update_cache: yes 
+    upgrade: yes
+
+
+- name: Install NGINX
+  apt: # Sudo apt install
+    name: nginx # ['nginx']
+    state: latest
+  community.general.ufw:
+    state: enabled
+    rule: allow
+    name: 'Nginx Full'
+
+
+- name: Install Node.js
+  shell:
+    cmd: "curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash"
+
+  apt: 
+    name: nodejs
+    state: latest
+
+
+- name: npm install
+  shell:
+    cmd: "npm install"
+
+
+- name: Install Ghost-CLI
+  shell:
+    cmd: "sudo npm install ghost-cli@latest -g"
+
+
+- name: Create a directory
+  shell:
+    cmd: "sudo mkdir -p /var/www/sitename"
+  # file: 
+  #  path: /var/www/sitename
+  #  state: directory
+
+  shell:
+    cmd: "sudo chown <user>:<user>"
+    chdir: "/var/www/sitename"
+
+    cmd: "sudo chmod 775"
+    chdir: "/var/www/sitename"
+
+
+# Then navigate into it
+#cd /var/www/sitename
+
+- name: run install process
+  shell:
+    cmd: "ghost install"
+    chdir: "/var/www/sitename"
+
+
+# definir respostas ao ghost-cli
+
+
+# Create novo user?

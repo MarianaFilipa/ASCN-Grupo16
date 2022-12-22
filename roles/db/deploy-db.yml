@@ -1,0 +1,35 @@
+#MySQL:
+---
+# Instalar MySQL
+- name: Install MySQL packages
+  apt:
+    name: mysql-server
+    state: latest
+
+- name: Change MySQL bind-address #Um dos passos introduzidos no enunciado
+  lineinfile: dest=/etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp='bind-address\s*=\s*127\.0\.0\.1\s*'
+    line='bind-address   = {{ ghost_db_ip }}'
+    state=present
+    backrefs=yes
+  notify: restart mysql #it notifies and executes a handler by this name
+
+# Criar Base de Dados para o Ghost
+- name: Criar Base de Dados
+  mysql_db: name={{ ghost_db_name }} state=present
+
+# Remove dados de um utilizador já exista, remove
+- name: Remove utilizadores com o mesmo nome
+  mysql_user:
+    name: "{{ ghost_db_user }}"
+    host_all: yes
+    state: absent
+
+# Criar um User para o Ghost
+- name: Criar utilizador para o Ghost
+  mysql_user:
+    name: "{{ ghost_db_user }}"
+    password: "{{ ghost_db_password }}"
+    priv: "*.*:ALL,GRANT"
+    host: "{{ ghost_ip }}"
+    state: present
