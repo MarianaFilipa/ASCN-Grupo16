@@ -1,12 +1,9 @@
 ---
-- name: DB install and start
+# Playbook to install DB
+
+- name: Install DB
   hosts: localhost
+  gather_facts: false
   become: yes
   roles:
     - db
-
-#- name: Ghost install and start
-#  hosts: ?
-#  become: yes
-#  roles:
-#    - ghost

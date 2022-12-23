@@ -1,0 +1,67 @@
+---
+
+# Criar um objeto deployment da Database
+- name: Create a Deployment object for Database
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Deployment
+      metadata:
+        name: db-deployment # Name of the object
+        labels:
+          app: db
+          tier: database
+      spec: # description of the characteristics of the resource
+        selector: 
+          matchLabels:
+            app: db
+        strategy:
+          type: Recreate
+        template:
+          metadata:
+            labels:
+              app: db
+              tier: database
+          spec:
+            containers:
+            - name: mysql
+              image: mysql:latest
+              env: # The variables below could be set on a ConfigMap object
+              - name: MYSQL_ALLOW_EMPTY_PASSWORD
+                value: "true"
+              - name: MYSQL_DATABASE  # Create a database with this name
+                value: "{{ ghost_db_name }}"
+              - name: MYSQL_USER      # Create a user with this name
+                value: "{{ ghost_db_user }}"
+              - name: MYSQL_PASSWORD  # The user will use this password
+                value: "{{ ghost_db_password }}" # Use Secret object in real usage
+              ports:
+              - containerPort: 3306
+
+# Criar um objeto service da Database 
+#   Para poder ser acedido por outros pods
+
+
+# Criar um objeto deployment da Database
+- name: Create a Service object for Database
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: db-service # Name of the object
+        labels:
+          app: db
+          tier: database
+      spec: # description of the characteristics of the resource
+        type: ClusterIP
+        selector: 
+          matchLabels:
+            app: db # Service for objects label as db
+        ports: 
+          - targetPort: 3306 # port that containers are listening on
+            port: 3306 # port number exposed internally in the cluster
+        
+# ClusterIP: Exposes the Service on a cluster-internal IP
