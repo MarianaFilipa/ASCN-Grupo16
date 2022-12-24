@@ -4,6 +4,7 @@
 - name: Install DB
   hosts: localhost
   gather_facts: false
-  become: yes
+  environment:
+     GOOGLE_CREDENTIALS: "{{ gcp_cred_file }}"
   roles:
     - db

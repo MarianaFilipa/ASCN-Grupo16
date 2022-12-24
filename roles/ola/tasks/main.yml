@@ -1,5 +1,0 @@
----
-
-- name: TESTE
-  shell: 
-    cmd: "ls"
