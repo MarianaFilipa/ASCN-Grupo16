@@ -1,0 +1,63 @@
+---
+- name: Create a namespace of the app Ghost
+  kubernetes.core.k8s:
+    name: ghost-namespace
+    apiVersion: v1
+    kind: Namespace
+    state: present
+
+- name: Create a Deployment object for Ghost
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Deployment
+      metadata:
+        name: ghost-deployment # Name of the object
+        namespace: ghost-namespace
+        labels:
+          app: ghost
+
+      spec: # description of the characteristics of the resource: onde é definido o que este deployment object deverá ter
+        selector: 
+          matchLabels:
+            app: ghost
+        strategy:
+          type: Recreate # ?
+        template:
+          metadata:
+            labels:
+              app: ghost
+          spec:
+            containers:
+            - name: ghost
+
+
+
+- name: Create a Service object for Ghost
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1   # Service for exposing Swap
+      kind: Service # Create an object swap service.
+      metadata:
+        name: ghost-service
+        namespace: ghost-namespace
+        labels:
+          app: ghost
+      spec:
+        type: NodePort # Makes the service accessible on a static port on each Node in the cluster.
+                       # This port on each node will lead to the swap-service?
+        selector:
+          app: ghost    # the app swap deployed in the swap-deployment
+        ports:
+            # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
+          - targetPort: 8000 # port that containers are listening on
+            port: 8000 # port exposed internally in the cluster
+            # Optional field
+            # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
+            nodePort: {{ ghost_port }} # a static port assigned on each the node
+
+
+
+  # Falta definir o ip do ghost
