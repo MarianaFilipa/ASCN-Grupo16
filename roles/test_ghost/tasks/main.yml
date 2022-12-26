@@ -5,7 +5,7 @@
 
 - name: Check that you can connect (GET) to Ghost and it returns a status 200
   ansible.builtin.uri:
-    url: "http://{{ ghost_ip }}:{{ghost_port}}/"
+    url: "http://{{ ghost_ip }}:{{ ghost_port }}/"
     method: GET
     status_code: 200
   register: result

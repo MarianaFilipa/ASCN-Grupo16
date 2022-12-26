@@ -1,6 +1,5 @@
 ---
-
-- name: Create a k8s namespace
+- name: Create a namespace
   kubernetes.core.k8s:
     name: db
     api_version: v1
@@ -47,11 +46,7 @@
               ports:
               - containerPort: 3306
 
-# Criar um objeto service da Database 
-#   Para poder ser acedido por outros pods
-
-
-# Criar um objeto deployment da Database
+# Criar um objeto serive da Database: para poder ser acedido por outros pods
 - name: Create a Service object for Database
   kubernetes.core.k8s:
     state: present
