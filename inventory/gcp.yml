@@ -5,7 +5,7 @@ all:
   # GKE cluster variables
   gcp_project: grupo16-369310                          # ID of GCP Project
   gcp_auth_kind: serviceaccount                        # Do not change
-  gcp_cred_file: /home/edu/Desktop/tps/ASCN-Grupo16/grupo16-369310-71c1e9228c3b.json   # Path to service account keys (json file downloaded from GCP)
+  gcp_cred_file: /home/mariana/Universidade/4º Ano/ASCN/ASCN-Grupo16/grupo16-369310-71c1e9228c3b.json   # Path to service account keys (json file downloaded from GCP)
 
   gcp_zone: us-central1-a
   gcp_image_type: ubuntu_containerd
@@ -15,12 +15,16 @@ all:
 
 
   # APP variables
-  ghost_ip: <GHOST_SERVICE_IP>     # Needs to be updated
-  ghost_port: <GHOST_PORT>         # Needs to be updated
+  ghost_ip: 10.0.13.254        # Needs to be updated
+  ghost_port: 30007           # Needs to be updated: 30007
 
   # Additional variables
   # DB variables
   ghost_db_name: ghost_db
   ghost_db_user: ghost_user_16
   ghost_db_password: ghost_password_16  #Careful this should be using VAULT!!!!
-  ghost_db_ip: "?"                      # bind ip for DB - Using Inventory file content
+  #ghost_db_ip: "?"                      # bind ip for DB - Using Inventory file content
+
+
+# use kubectl exec -it <Pod Name> --mysqladimn --host = 0.0.0.0 --user = <user> --password <password> status
+    # to check if database is avaliable.

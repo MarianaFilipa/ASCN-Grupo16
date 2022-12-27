@@ -60,11 +60,11 @@
           app: db
           tier: database
       spec: # description of the characteristics of the resource
-        type: ClusterIP
+        type: ClusterIP    # Determina que este serviço pode ser acedido por outros pods do cluster
         selector: 
-          app: db # Service for objects label as db
+          app: db          # Service for objects label as db
         ports: 
-          - targetPort: 80 # port that containers are listening on
-            port: 80 # port number exposed internally in the cluster
+          - targetPort: 3306 # port that containers are listening on
+            port: 3306     # port number exposed internally in the cluster
         
 # ClusterIP: Exposes the Service on a cluster-internal IP

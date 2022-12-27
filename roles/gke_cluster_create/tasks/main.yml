@@ -1,5 +1,4 @@
 ---
-
 - name: Create Google Kubernetes Engine Cluster
   gcp_container_cluster:  # Cria cluster com dois nodos, tipo e2-small, 100gb de memória e correr ubuntu
     name: ascn-cluster

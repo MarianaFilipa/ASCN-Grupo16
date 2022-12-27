@@ -8,3 +8,11 @@
      GOOGLE_CREDENTIALS: "{{ gcp_cred_file }}"
   roles:
     - db
+
+- name: Install Ghost
+  hosts: localhost
+  gather_facts: false
+  environment:
+     GOOGLE_CREDENTIALS: "{{ gcp_cred_file }}"
+  roles:
+    - ghost
