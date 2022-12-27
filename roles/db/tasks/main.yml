@@ -15,7 +15,7 @@
       kind: Deployment
       metadata:
         name: db-deployment # Name of the object
-        namespace: db
+        namespace: default #db
         labels:
           app: db
           tier: database
@@ -55,7 +55,7 @@
       kind: Service
       metadata:
         name: db-service # Name of the object
-        namespace: db
+        namespace: default #db
         labels:
           app: db
           tier: database

@@ -15,8 +15,8 @@ all:
 
 
   # APP variables
-  ghost_ip: 10.0.13.254        # Needs to be updated
-  ghost_port: 30007           # Needs to be updated: 30007
+  ghost_ip: 10.0.12.234       # Needs to be updated
+  ghost_port: 30008           # Needs to be updated: 30007
 
   # Additional variables
   # DB variables
