@@ -25,56 +25,56 @@
             app: ghost
         strategy:
           type: Recreate
-        template:
-          metadata:
-            labels:
-              app: ghost
-          spec:
-            containers:
-            - name: swap             # Swap Pod...?
-              image: ascnuminho/swap # Docker Image...
-              env:                   # Environment Variables 
-              - name: DB_HOST
-                value: db-service # mysql-service create on the other file
-              - name: DB_DATABASE
-                value: "{{ ghost_db_name }}"          # Name of the database created with the previous database
-              - name: DB_USERNAME
-                value: "{{ ghost_db_user }}"      # Name of the user created in the mysql-deployment
-              - name: DB_PASSWORD
-                value: "{{ ghost_db_password }}" # Use secret object in real usage
-              - name: MIGRATE
-                value: "true"
-              ports:
-              - containerPort: 8000  # Expose the port where the swap is listening to
-
-
         #template:
         #  metadata:
         #    labels:
         #      app: ghost
         #  spec:
         #    containers:
-        #    - name: ghost
-        #      image: ghost:5 
-        #        env: # The variables below could be set on a ConfigMap object
-        #      #- name: database__client
-        #      #  value: mysql
-        #      #- name: database__connection__host # Create a database with this name
-        #      #  value: db-service                         # IP database => pod db-service
-        #      #                                           # Porta a base de dados?
-        #      #- name: database__connection__user          # Create a user with this name
-        #      #  value: "{{ ghost_db_user }}"
-        #      #- name: database__connection__password      # The user will use this password
-        #      #  value: "{{ ghost_db_password }}"          # Use Secret object in real usage
-        #      #- name: database__connection__database      # Create a database with this name
-        #      #  value: "{{ ghost_db_name }}"
-        #      - name: NODE_ENV # ?
-        #        value: development
-        #      #- name: url
-        #      #  value: "http://{{ ghost_ip }}:{{ ghost_port }}"
+        #    - name: swap             # Swap Pod...?
+        #      image: ascnuminho/swap # Docker Image...
+        #      env:                   # Environment Variables 
+        #      - name: DB_HOST
+        #        value: db-service # mysql-service create on the other file
+        #      - name: DB_DATABASE
+        #        value: "{{ ghost_db_name }}"          # Name of the database created with the previous database
+        #      - name: DB_USERNAME
+        #        value: "{{ ghost_db_user }}"      # Name of the user created in the mysql-deployment
+        #      - name: DB_PASSWORD
+        #        value: "{{ ghost_db_password }}" # Use secret object in real usage
+        #      - name: MIGRATE
+        #        value: "true"
         #      ports:
-        #      - containerPort: 2369             # Container está exposto na porta 80
-        #                                                  # o ghost by defaul executa na porta 2369
+        #      - containerPort: 8000  # Expose the port where the swap is listening to
+
+
+        template:
+          metadata:
+            labels:
+              app: ghost
+          spec:
+            containers:
+            - name: ghost
+              image: ghost:5 
+              env: # The variables below could be set on a ConfigMap object
+              - name: database__client
+                value: mysql
+              - name: database__connection__host # Create a database with this name
+                value: db-service                         # IP database => pod db-service
+                                                       # Porta a base de dados?
+              - name: database__connection__user          # Create a user with this name
+                value: "{{ ghost_db_user }}"
+              - name: database__connection__password      # The user will use this password
+                value: "{{ ghost_db_password }}"          # Use Secret object in real usage
+              - name: database__connection__database      # Create a database with this name
+                value: "{{ ghost_db_name }}"
+              - name: NODE_ENV # ?
+                value: development
+              - name: url
+                value: "http://{{ ghost_ip }}:{{ ghost_port }}"
+              ports:
+              - containerPort: 2369             # Container está exposto na porta 80
+                                                          # o ghost by defaul executa na porta 2369
 
 - name: Create a Service object for Ghost
   kubernetes.core.k8s:
