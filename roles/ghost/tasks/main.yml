@@ -53,32 +53,6 @@
               - containerPort: 2369             # Container está exposto na porta 80
                                                           # o ghost by defaul executa na porta 2369
 
-
-        #template:
-        #  metadata:
-        #    labels:
-        #      app: ghost
-        #  spec:
-        #    containers:
-        #    - name: swap             # Swap Pod...?
-        #      image: ascnuminho/swap # Docker Image...
-        #      env:                   # Environment Variables 
-        #      - name: DB_HOST
-        #        value: db-service # mysql-service create on the other file
-        #      - name: DB_DATABASE
-        #        value: "{{ ghost_db_name }}"          # Name of the database created with the previous database
-        #      - name: DB_USERNAME
-        #        value: "{{ ghost_db_user }}"      # Name of the user created in the mysql-deployment
-        #      - name: DB_PASSWORD
-        #        value: "{{ ghost_db_password }}" # Use secret object in real usage
-        #      - name: MIGRATE
-        #        value: "true"
-        #      ports:
-        #      - containerPort: 8000  # Expose the port where the swap is listening to
-
-
-
-
 - name: Create a Service object for Ghost
   kubernetes.core.k8s:
     state: present
