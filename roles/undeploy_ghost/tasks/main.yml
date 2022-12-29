@@ -1,1 +1,32 @@
 ---
+- name: Undeploy Ghost Service
+  k8s:
+    api_version: v1
+    kind: Service
+    namespace: default
+    name: ghost-service
+    state: absent
+
+- name: Undeploy Ghost Deployment
+  k8s:
+    api_version: v1
+    kind: Deployment
+    namespace: default
+    name: ghost-deployment
+    state: absent
+
+- name: Undeploy DB Service
+  k8s:
+    api_version: v1
+    kind: Service
+    namespace: default
+    name: db-service
+    state: absent
+
+- name: Undeploy DB Deployment
+  k8s:
+    api_version: v1
+    kind: Deployment
+    namespace: default
+    name: db-deployment
+    state: absent

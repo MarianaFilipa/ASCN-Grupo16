@@ -11,21 +11,22 @@
 # Pensando num escalonamento horizontal:
   # Podemos precisar que multiplos pods acedam o mesmo pv
   # pv não deve ser "único" para cada pvc
-- name: Create PV for Database
-  kubernetes.core.k8s:
-    state: present
-    definition: 
-      apiVersion: v1
-      kind: PersistentVolume
-      metadata:
-        name: pv001
-      spec:
-        capacity:
-          storage: 20Gi
-        accessModes:
-          - ReadWriteMany
-        persistentVolumeReclaimPolicy: Retain # Depois de o pvc ter sido apagado, para este pv ser apagado, tem ser ser feito manualmente
-        storageClassName: local-storage
+#- name: Create PV for Database
+#  kubernetes.core.k8s:
+#    state: present
+#    definition: 
+#      apiVersion: v1
+#      kind: PersistentVolume
+#      metadata:
+#        name: pv001
+#      spec:
+#        capacity:
+#          storage: 20Gi
+#        accessModes:
+#          - ReadWriteMany
+#        persistentVolumeReclaimPolicy: Retain # Depois de o pvc ter sido apagado, para este pv ser apagado, tem ser ser feito manualmente
+#        
+#        storageClassName: local-storage
         #local: # local storage devices mounted on nodes
         #  path: /mnt/data
         # nodeAffinity:
@@ -37,9 +38,27 @@
         #         values:
         #         - worker1 
 
-    
-# Persistent Volume Claim
 
+# PV: piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
+# storageclass.kubernetes.io/is-default-class ?
+- name: Create StorageClass for Database
+  kubernetes.core.k8s:
+    state: present
+    definition: 
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: sc001
+      provisioner: kubernetes.io/gce-pd  # internal provisioner
+      reclaimPolicy: Retain # Depois de o pvc ter sido apagado, para este pv ser apagado, tem ser ser feito manualmente
+      allowVolumeExpansion: true # ? 
+      #parameters:
+      #  type: gp2  # ssd => tipo do disco 
+      volumeBindingMode: Immediate  # Immediate:
+                                    # WaitForFirstConsumer:
+
+
+# Persistent Volume Claim
 - name: Create PVC for Database
   kubernetes.core.k8s:
     state: present
@@ -48,14 +67,15 @@
       kind: PersistentVolumeClaim
       metadata:
         name: db-pvc
+        namespace: default #db
       spec:
         resources:
           requests:
             storage: 20Gi
         accessModes:
-          - ReadWriteMany
-        #persistentVolumeReclaimPolicy: Retain # Depois de o pvc ter sido apagado, para este pv ser apagado, tem ser ser feito manualmente
-        storageClassName: local-storage
+          - ReadWriteOnce
+        persistentVolumeReclaimPolicy: Retain # Depois de o pvc ter sido apagado, para este pv ser apagado, tem ser ser feito manualmente
+        storageClassName: sc001 # local-storage # não deve estar presente, para que o GKE crie um persistent volume usando o storage class
         
 
 
@@ -98,11 +118,11 @@
                 value: "{{ ghost_db_password }}" # Use Secret object in real usage
               ports:
               - containerPort: 3306
-              volumeMounts:
-              - name: db-persistent-storage  
-            #  mountPath: /var/lib/mysql
+              volumeMounts: # ?
+              - mountPath: /var/lib/mysql # ?
+                name: db-persistent-storage # ?
             volumes:    # Deve ter um persistent volume
-            - name: db-persistent-volume
+            - name: db-persistent-storage
               persistentVolumeClaim:
                 claimName: db-pvc  # Request for storage. Can ensure persistency even if the pod is terminated
 
