@@ -34,21 +34,21 @@
             - name: ghost
               image: ghost:5 
               env: # The variables below could be set on a ConfigMap object
-              #- name: database__client
-              #  value: mysql
-              #- name: database__connection__host # Create a database with this name
-              #  value: db-service                         # IP database => pod db-service
-              #                                           # Porta a base de dados?
-              #- name: database__connection__user          # Create a user with this name
-              #  value: "{{ ghost_db_user }}"
-              #- name: database__connection__password      # The user will use this password
-              #  value: "{{ ghost_db_password }}"          # Use Secret object in real usage
-              #- name: database__connection__database      # Create a database with this name
-              #  value: "{{ ghost_db_name }}"
-              - name: NODE_ENV # ?
-                value: development
-              #- name: url
-              #  value: "http://{{ ghost_ip }}:{{ ghost_port }}"
+              - name: database__client
+                value: mysql
+              - name: database__connection__host # Create a database with this name
+                value: db-service                         # IP database => pod db-service
+                                                         # Porta a base de dados?
+              - name: database__connection__user          # Create a user with this name
+                value: "{{ ghost_db_user }}"
+              - name: database__connection__password      # The user will use this password
+                value: "{{ ghost_db_password }}"          # Use Secret object in real usage
+              - name: database__connection__database      # Create a database with this name
+                value: "{{ ghost_db_name }}"
+              #- name: NODE_ENV # ?
+              #  value: development
+              - name: url
+                value: "http://{{ ghost_ip }}:{{ ghost_port }}"
               ports:
               - containerPort: 2369             # Container está exposto na porta 80
                                                           # o ghost by defaul executa na porta 2369
@@ -91,7 +91,7 @@
         labels:
           app: ghost
       spec:
-        type: NodePort # Makes the service accessible on a static port on each Node in the cluster.
+        type: LoadBalancer # Makes the service accessible on a static port on each Node in the cluster.
                        # This port on each node will lead to the swap-service?
         selector:
           app: ghost  
@@ -99,9 +99,10 @@
                                       # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
           - targetPort: 2369            # port that containers are listening on
             port: 2369                  # port exposed internally in the cluster
+            name: http
             # Optional field
             # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
-            nodePort: 30008 # a static port assigned on each the node
+            #nodePort: 30008 # a static port assigned on each the node
 
 
 
