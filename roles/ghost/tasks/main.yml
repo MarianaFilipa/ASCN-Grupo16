@@ -15,16 +15,45 @@
       kind: Deployment
       metadata:
         name: ghost-deployment # Name of the object
-        namespace: ghost-namespace
+        namespace: default # ghost-namespace
         labels:
           app: ghost
       spec: # description of the characteristics of the resource: onde é definido o que este deployment object deverá ter
-        replicas: 2 # There two object of this type
+        replicas: 1 # There is only one object of this type
         selector: 
           matchLabels:
             app: ghost
         strategy:
           type: Recreate
+        template:
+          metadata:
+            labels:
+              app: ghost
+          spec:
+            containers:
+            - name: ghost
+              image: ghost:5 
+              env: # The variables below could be set on a ConfigMap object
+              - name: database__client
+                value: mysql
+              - name: database__connection__host # Create a database with this name
+                value: db-service                         # IP database => pod db-service
+                                                         # Porta a base de dados?
+              - name: database__connection__user          # Create a user with this name
+                value: "{{ ghost_db_user }}"
+              - name: database__connection__password      # The user will use this password
+                value: "{{ ghost_db_password }}"          # Use Secret object in real usage
+              - name: database__connection__database      # Create a database with this name
+                value: "{{ ghost_db_name }}"
+              #- name: NODE_ENV # ?
+              #  value: development
+              - name: url
+                value: "http://{{ ghost_ip }}:{{ ghost_port }}"
+              ports:
+              - containerPort: 2369             # Container está exposto na porta 80
+                                                          # o ghost by defaul executa na porta 2369
+
+
         #template:
         #  metadata:
         #    labels:
@@ -48,33 +77,6 @@
         #      - containerPort: 8000  # Expose the port where the swap is listening to
 
 
-        template:
-          metadata:
-            labels:
-              app: ghost
-          spec:
-            containers:
-            - name: ghost
-              image: ghost:5 
-              env: # The variables below could be set on a ConfigMap object
-              - name: database__client
-                value: mysql
-              - name: database__connection__host # Create a database with this name
-                value: db-service                         # IP database => pod db-service
-                                                       # Porta a base de dados?
-              - name: database__connection__user          # Create a user with this name
-                value: "{{ ghost_db_user }}"
-              - name: database__connection__password      # The user will use this password
-                value: "{{ ghost_db_password }}"          # Use Secret object in real usage
-              - name: database__connection__database      # Create a database with this name
-                value: "{{ ghost_db_name }}"
-              - name: NODE_ENV # ?
-                value: development
-              - name: url
-                value: "http://{{ ghost_ip }}:{{ ghost_port }}"
-              ports:
-              - containerPort: 2369             # Container está exposto na porta 80
-                                                          # o ghost by defaul executa na porta 2369
 
 - name: Create a Service object for Ghost
   kubernetes.core.k8s:
@@ -84,21 +86,22 @@
       kind: Service # Create an object swap service.
       metadata:
         name: ghost-service
-        namespace: ghost-namespace
+        namespace: default #ghost-namespace
         labels:
           app: ghost
       spec:
-        type: NodePort # Makes the service accessible on a static port on each Node in the cluster.
+        type: LoadBalancer # Makes the service accessible on a static port on each Node in the cluster.
                        # This port on each node will lead to the swap-service?
         selector:
           app: ghost  
         ports:
                                       # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
-          - targetPort: 8000            # port that containers are listening on
-            port: 8000                  # port exposed internally in the cluster
+          - targetPort: 2369            # port that containers are listening on
+            port: 2369                  # port exposed internally in the cluster
+            name: http
             # Optional field
             # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
-            nodePort: 30007 # a static port assigned on each the node
+            #nodePort: 30008 # a static port assigned on each the node
 
 
 
