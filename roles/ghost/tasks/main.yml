@@ -6,6 +6,20 @@
     kind: Namespace
     state: present
 
+# Create an static IP
+- name: Create a static IP address Google Kubernetes Engine
+  gcp_compute_address:
+    name: ghost-ip-1
+    address: "{{ ghost_ip }}"
+    region:  us-central1
+    state: present
+    project: "{{ gcp_project }}"
+    auth_kind: "{{ gcp_auth_kind }}"
+    service_account_file: "{{ gcp_cred_file }}"
+  #until: "cluster is not failed"
+  #delay: 60
+  #retries: 3
+
 - name: Create a Deployment object for Ghost
   kubernetes.core.k8s:
     state: present

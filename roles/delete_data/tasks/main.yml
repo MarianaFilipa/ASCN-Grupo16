@@ -1,36 +1,4 @@
----
-- name: Undeploy Ghost Service
-  k8s:
-    api_version: v1
-    kind: Service
-    namespace: default
-    name: ghost-service
-    state: absent
-
-- name: Undeploy Ghost Deployment
-  k8s:
-    api_version: v1
-    kind: Deployment
-    namespace: default
-    name: ghost-deployment
-    state: absent
-
-- name: Undeploy DB Service
-  k8s:
-    api_version: v1
-    kind: Service
-    namespace: default
-    name: db-service
-    state: absent
-
-- name: Undeploy DB Deployment
-  k8s:
-    api_version: v1
-    kind: Deployment
-    namespace: default
-    name: db-deployment
-    state: absent
-  
+---  
 - name: Undeploy PVC
   k8s:
     api_version: v1
@@ -46,3 +14,16 @@
     namespace: default
     name: sc001
     state: absent
+
+
+- name: Delete static IP address Google Kubernetes Engine
+  gcp_compute_address:
+    name: ghost-ip-1
+    region:  us-central1
+    state: absent
+    project: "{{ gcp_project }}"
+    auth_kind: "{{ gcp_auth_kind }}"
+    service_account_file: "{{ gcp_cred_file }}"
+  #until: "cluster is not failed"
+  #delay: 60
+  #retries: 3
