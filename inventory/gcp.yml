@@ -5,7 +5,7 @@ all:
   # GKE cluster variables
   gcp_project: grupo16-369310                          # ID of GCP Project
   gcp_auth_kind: serviceaccount                        # Do not change
-  gcp_cred_file: /home/lau/Desktop/Universidade/ASCN/ASCN-Grupo16/grupo16-369310-71c1e9228c3b.json   # Path to service account keys (json file downloaded from GCP)
+  gcp_cred_file: /home/mariana/Universidade/4º Ano/ASCN/ASCN-Grupo16/grupo16-369310-71c1e9228c3b.json   # Path to service account keys (json file downloaded from GCP)
 
   gcp_zone: us-central1-a
   gcp_image_type: ubuntu_containerd
@@ -15,8 +15,8 @@ all:
 
 
   # APP variables
-  ghost_ip: 34.67.208.62     # Needs to be updated
-  ghost_port: 2369           # Needs to be updated: 30007
+  ghost_ip: 34.28.97.34     # Needs to be updated
+  ghost_port: 2368           # Needs to be updated: 30007
 
   # Additional variables
   # DB variables
