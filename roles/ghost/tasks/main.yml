@@ -110,3 +110,22 @@
               ports:
               - containerPort: 2368             # Container está exposto na porta 80
             
+
+
+- name: Search for pod with label app=db
+  kubernetes.core.k8s_info:
+    kind: Pod
+    label_selectors:
+      - app = db
+      - tier in (database)
+  register: pod_db
+
+- debug: msg="{{ pod_db.resources[0].metadata.name }}"
+
+- name: Create Ghost Admin
+  kubernetes.core.k8s_exec:
+    namespace: default
+    pod: '{{ pod_db.resources[0].metadata.name }}'
+    #container: manager
+    #ascn123 = \$2b\$10\$IOPRnXn/t5QCPwKyrT/AfuK3grXM/MnjcNOeeHuQRlmY6cdECe1jS
+    command: mysql ghost_db -e "update users set name='ascn', password='\$2b\$10\$IOPRnXn/t5QCPwKyrT/AfuK3grXM/MnjcNOeeHuQRlmY6cdECe1jS', email='ascn@example.com', status='active' where id=1;"
