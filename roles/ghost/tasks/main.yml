@@ -7,19 +7,66 @@
     state: present
 
 # Create an static IP
-- name: Create a static IP address Google Kubernetes Engine
-  gcp_compute_address:
-    name: ghost-ip-1
-    address: "{{ ghost_ip }}"
-    region:  us-central1
-    state: present
-    project: "{{ gcp_project }}"
-    auth_kind: "{{ gcp_auth_kind }}"
-    service_account_file: "{{ gcp_cred_file }}"
-  #until: "cluster is not failed"
-  #delay: 60
-  #retries: 3
+# - name: Create a static IP address Google Kubernetes Engine
+#   gcp_compute_address:
+#     name: ghost-ip-1
+#     address: "{{ ghost_ip }}"
+#     region:  us-central1
+#     state: present
+#     project: "{{ gcp_project }}"
+#     auth_kind: "{{ gcp_auth_kind }}"
+#     service_account_file: "{{ gcp_cred_file }}"
+#   #until: "cluster is not failed"
+#   #delay: 60
+#   #retries: 3
 
+# wait: yes
+#     wait_sleep: 10
+#     wait_timeout: 60
+#     wait_condition:
+#       type: Complete
+#       status: "True"
+
+- name: Create a Service object for Ghost
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1   # Service for exposing Swap
+      kind: Service # Create an object swap service.
+      metadata:
+        name: ghost-service
+        namespace: default #ghost-namespace
+        labels:
+          app: ghost
+      spec:
+        type: LoadBalancer # Makes the service accessible on a static port on each Node in the cluster.
+                       # This port on each node will lead to the swap-service?
+        # loadBalancerIP: "{{ ghost_ip }}"
+        selector:
+          app: ghost 
+        ports:
+                                      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
+          - targetPort: 2368            # port that containers are listening on
+            port: 2368                  # port exposed internally in the cluster
+            name: http
+
+# Wait for the load balancer to be active (add -n NameSpace after the name of the service if)
+
+- name: Wait for load balancer to have an external ip
+  shell: "kubectl get svc ghost-service -o wide --no-headers | awk '{print $4}'"
+  register: ip
+  until: ip.stdout != '<pending>' # Repete até isto ser verdade
+  retries: 10
+  delay: 10
+
+- name: Change Ghost_ip from inventory
+  lineinfile: 
+    dest: inventory/gcp.yml
+    regexp: '\s*ghost_ip*'
+    line: '  ghost_ip: {{ ip.stdout }}'
+    state: present
+    backrefs: yes
+  
 - name: Create a Deployment object for Ghost
   kubernetes.core.k8s:
     state: present
@@ -62,26 +109,4 @@
                 value: "http://{{ ghost_ip }}:{{ ghost_port }}"
               ports:
               - containerPort: 2368             # Container está exposto na porta 80
-          
-- name: Create a Service object for Ghost
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1   # Service for exposing Swap
-      kind: Service # Create an object swap service.
-      metadata:
-        name: ghost-service
-        namespace: default #ghost-namespace
-        labels:
-          app: ghost
-      spec:
-        type: LoadBalancer # Makes the service accessible on a static port on each Node in the cluster.
-                       # This port on each node will lead to the swap-service?
-        loadBalancerIP: "{{ ghost_ip }}"
-        selector:
-          app: ghost 
-        ports:
-                                      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
-          - targetPort: 2368            # port that containers are listening on
-            port: 2368                  # port exposed internally in the cluster
-            name: http
+            
