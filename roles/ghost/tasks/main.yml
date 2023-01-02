@@ -6,6 +6,20 @@
     kind: Namespace
     state: present
 
+# Create an static IP
+- name: Create a static IP address Google Kubernetes Engine
+  gcp_compute_address:
+    name: ghost-ip-1
+    address: "{{ ghost_ip }}"
+    region:  us-central1
+    state: present
+    project: "{{ gcp_project }}"
+    auth_kind: "{{ gcp_auth_kind }}"
+    service_account_file: "{{ gcp_cred_file }}"
+  #until: "cluster is not failed"
+  #delay: 60
+  #retries: 3
+
 - name: Create a Deployment object for Ghost
   kubernetes.core.k8s:
     state: present
@@ -44,55 +58,11 @@
                 value: "{{ ghost_db_password }}"          # Use Secret object in real usage
               - name: database__connection__database      # Create a database with this name
                 value: "{{ ghost_db_name }}"
-              #- name: NODE_ENV # ?
-              #  value: development
               - name: url
                 value: "http://{{ ghost_ip }}:{{ ghost_port }}"
               ports:
               - containerPort: 2368             # Container está exposto na porta 80
           
-
-# - name: Create a Deployment object for Ghost
-#   kubernetes.core.k8s:
-#     state: present
-#     definition:
-#       apiVersion: apps/v1
-#       kind: Deployment  # Creates a deployment object
-#       metadata:
-#         name: ghost-deployment # Name of the object is swap
-#         namespace: default # ghost-namespace
-#         labels:
-#           app: ghost
-#       spec:
-#         replicas: 1 # There is only one object of this type
-#         selector: 
-#           matchLabels:
-#             app: ghost
-#         strategy:
-#           type: Recreate
-#         template:
-#           metadata:
-#             labels:
-#               app: ghost
-#           spec:
-#             containers:
-#             - name: swap             # Swap Pod...?
-#               image: ascnuminho/swap # Docker Image...
-#               env:                   # Environment Variables 
-#               - name: DB_HOST
-#                 value: db-service # mysql-service create on the other file
-#               - name: DB_DATABASE
-#                 value: "{{ ghost_db_name }}"          # Name of the database created with the previous database
-#               - name: DB_USERNAME
-#                 value: "{{ ghost_db_user }}"    # Name of the user created in the mysql-deployment
-#               - name: DB_PASSWORD
-#                 value: "{{ ghost_db_password }}" # Use secret object in real usage
-#               - name: MIGRATE
-#                 value: "true"
-#               ports:
-#               - containerPort: 8000  # Expose the port where the swap is listening to
-#                                                 # o ghost by defaul executa na porta 2369
-
 - name: Create a Service object for Ghost
   kubernetes.core.k8s:
     state: present
@@ -107,18 +77,11 @@
       spec:
         type: LoadBalancer # Makes the service accessible on a static port on each Node in the cluster.
                        # This port on each node will lead to the swap-service?
-        #externalTrafficPolicy: Local
+        loadBalancerIP: "{{ ghost_ip }}"
         selector:
           app: ghost 
-        #loadBalancerIP: 34.135.5.129 
         ports:
                                       # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
           - targetPort: 2368            # port that containers are listening on
             port: 2368                  # port exposed internally in the cluster
             name: http
-            # Optional field
-            # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
-            #nodePort: 30008 # a static port assigned on each the node
-
-  # Falta definir o ip do ghost
-
