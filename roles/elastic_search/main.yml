@@ -1,0 +1,42 @@
+---
+
+# PV: piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
+- name: Create StorageClass for Elastic Search
+  kubernetes.core.k8s:
+    state: present
+    definition: 
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: elastic_sc
+      provisioner: kubernetes.io/gce-pd  # internal provisioner
+      reclaimPolicy: Delete 
+      allowVolumeExpansion: true 
+      volumeBindingMode: Immediate  
+      parameters:
+        type: pd-standard
+        fstype: ext4
+        replication-type: none
+
+
+- name: Create a Service object for Elastic Search
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: elasticsearch-service # Name of the object
+        namespace: default #db
+        labels:
+          app: elasticsearch
+      spec: # description of the characteristics of the resource
+        selector: 
+          app: elasticsearch
+        clusterIP: None         # Service for objects label as db
+      ports:
+        - port: 9200
+          name: rest
+        - port: 9300
+          name: inter-node
+
