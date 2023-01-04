@@ -70,6 +70,10 @@
 - name: Create a Deployment object for Ghost
   kubernetes.core.k8s:
     state: present
+    wait: yes
+    wait_condition:
+      status: "True"
+      type: Available
     definition:
       apiVersion: v1
       kind: Deployment
@@ -110,8 +114,6 @@
               ports:
               - containerPort: 2368             # Container está exposto na porta 80
             
-
-
 - name: Search for pod with label app=db
   kubernetes.core.k8s_info:
     kind: Pod
@@ -121,6 +123,18 @@
   register: pod_db
 
 - debug: msg="{{ pod_db.resources[0].metadata.name }}"
+
+- name: Wait for mysql tables to be created
+  kubernetes.core.k8s_exec:
+    namespace: default
+    pod: '{{ pod_db.resources[0].metadata.name }}'
+    command: mysql '{{ ghost_db_name }}' -e "select * from users;"
+  register: outGhost
+  until: outGhost.stdout != ""
+  retries: 10
+  delay: 5
+
+- debug: msg='{{ outGhost }}'
 
 - name: Create Ghost Admin
   kubernetes.core.k8s_exec:
