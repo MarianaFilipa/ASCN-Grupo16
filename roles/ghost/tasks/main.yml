@@ -47,7 +47,7 @@
         ports:
                                       # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
           - targetPort: 2368            # port that containers are listening on
-            port: 2368                  # port exposed internally in the cluster
+            port: '{{ ghost_port }}'                # port exposed internally in the cluster
             name: http
 
 # Wait for the load balancer to be active (add -n NameSpace after the name of the service if)
@@ -112,7 +112,7 @@
               - name: url
                 value: "http://{{ ghost_ip }}:{{ ghost_port }}"
               ports:
-              - containerPort: 2368             # Container está exposto na porta 80
+              - containerPort: 2368           # Container está exposto na porta 80
             
 - name: Search for pod with label app=db
   kubernetes.core.k8s_info:
