@@ -16,14 +16,14 @@ all:
 
 
   # APP variables
-  ghost_ip: 34.27.29.236
+  ghost_ip: 35.194.43.46
   ghost_port: 80
 
   # Additional variables
   # DB variables
   ghost_db_name: ghost_db
   ghost_db_user: ghost_user_16
-  ghost_db_password: ghost_password_16  #Careful this should be using VAULT!!!!
+  ghost_db_password: "{{ db_password }}"  #Careful this should be using VAULT!!!!
   #ghost_db_ip: "?"                      # bind ip for DB - Using Inventory file content
 
 
