@@ -6,7 +6,6 @@
     kind: Namespace
     state: present
 
-
 # Criar persistent volume para a Base de Dados
 # Pensando num escalonamento horizontal:
   # Podemos precisar que multiplos pods acedam o mesmo pv
@@ -82,6 +81,10 @@
 # Criar um objeto deployment da Database
 - name: Create a Deployment object for Database
   kubernetes.core.k8s:
+    wait: yes
+    wait_condition:
+      status: "True"
+      type: Available
     state: present
     definition:
       apiVersion: v1
