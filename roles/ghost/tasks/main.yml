@@ -45,9 +45,9 @@
         selector:
           app: ghost 
         ports:
-                                      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
+                                        # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
           - targetPort: 2368            # port that containers are listening on
-            port: '{{ ghost_port }}'                # port exposed internally in the cluster
+            port: '{{ ghost_port }}'    # port exposed internally in the cluster
             name: http
 
 # Wait for the load balancer to be active (add -n NameSpace after the name of the service if)
