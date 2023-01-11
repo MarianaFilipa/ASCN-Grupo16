@@ -143,3 +143,27 @@
     #container: manager
     #ascn123 = \$2b\$10\$IOPRnXn/t5QCPwKyrT/AfuK3grXM/MnjcNOeeHuQRlmY6cdECe1jS
     command: mysql ghost_db -e "update users set name='ascn', password='\$2b\$10\$IOPRnXn/t5QCPwKyrT/AfuK3grXM/MnjcNOeeHuQRlmY6cdECe1jS', email='ascn@example.com', status='active' where id=1;"
+
+
+- name: Create Horizontal Pod Autoscaler
+  kubernetes.core.k8s:
+    state: present
+    apiVersion: autoscaling/v2 # for cpu utilization use this api version
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: cpu_autoscale # name of the hpa
+      namespace: default
+    spec:
+      scaleTargetRef:
+        apiVersion: apps/v1 # apiVersion of the object we want to scale
+        kind: Deployment # type of the object we want to scale
+        name: ghost-deployment # name of the deployment object to scale
+      maxReplicas: 10
+      minReplicas: 2
+      metrics: 
+        type: Resource
+        resource:
+          name: cpu # monitors cpu
+          target:
+            type: Utilization
+            averageUtilization: 75 # if resource utilization of cpu higher than 75% scale up
