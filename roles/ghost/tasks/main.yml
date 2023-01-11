@@ -20,13 +20,6 @@
 #   #delay: 60
 #   #retries: 3
 
-# wait: yes
-#     wait_sleep: 10
-#     wait_timeout: 60
-#     wait_condition:
-#       type: Complete
-#       status: "True"
-
 - name: Create a Service object for Ghost
   kubernetes.core.k8s:
     state: present
@@ -111,6 +104,17 @@
                 value: "{{ ghost_db_name }}"
               - name: url
                 value: "http://{{ ghost_ip }}:{{ ghost_port }}"
+              
+              - name: mail__transport
+                value: "SMTP"
+              - name: mail__options__host
+                value: "smtp.mailtrap.io"
+              - name: mail__options__port
+                value: "2525"
+              - name: mail__options__auth__user
+                value: "0ca2ad863b7f5b"
+              - name: mail__options__auth__pass
+                value: "2e7dc632c7883a"
               ports:
               - containerPort: 2368           # Container está exposto na porta 80
             
