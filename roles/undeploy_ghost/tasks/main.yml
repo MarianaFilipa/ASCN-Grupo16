@@ -43,4 +43,4 @@
   expect:
     command: gcloud monitoring dashboards delete 'Custom Dashboard'
     responses:
-      'You are about to delete dashboard [Custom Dashboard]\r\n\r\nDo you want to continue (Y/n)?': 'Y'
+      'You are about to delete dashboard [CustomDashboard]", "", "Do you want to continue (Y/n)?  ': 'Y'
