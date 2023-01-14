@@ -1,43 +1,18 @@
 ---
 - name: Create a namespace
   kubernetes.core.k8s:
-    name: db
+    name: db-namespace
     api_version: v1
     kind: Namespace
     state: present
-
-# Criar persistent volume para a Base de Dados
-# Pensando num escalonamento horizontal:
-  # Podemos precisar que multiplos pods acedam o mesmo pv
-  # pv não deve ser "único" para cada pvc
-#- name: Create PV for Database
-#  kubernetes.core.k8s:
-#    state: present
-#    definition: 
-#      apiVersion: v1
-#      kind: PersistentVolume
-#      metadata:
-#        name: pv001
-#      spec:
-#        capacity:
-#          storage: 20Gi
-#        accessModes:
-#          - ReadWriteMany
-#        persistentVolumeReclaimPolicy: Retain # Depois de o pvc ter sido apagado, para este pv ser apagado, tem ser ser feito manualmente
-#        
-#        storageClassName: local-storage
-        #local: # local storage devices mounted on nodes
-        #  path: /mnt/data
-        # nodeAffinity:
-        #   required:
-        #     nodeSelectorTerms:
-        #     - matchExpressions:
-        #       - key: kubernetes.io/hostname
-        #         operator: In
-        #         values:
-        #         - worker1 
-
-
+    definition:
+      spec:
+        hard:
+          requests.cpu: 400m
+          limits.cpu: 500m
+          requests.mem: 500Mib
+          limits.memory: 600Mib
+  
 # PV: piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
 # storageclass.kubernetes.io/is-default-class ?
 - name: Create StorageClass for Database
@@ -66,7 +41,7 @@
       kind: PersistentVolumeClaim
       metadata:
         name: db-pvc
-        namespace: default #db
+        namespace: db-namespace # default
       spec:
         resources:
           requests:
@@ -91,7 +66,7 @@
       kind: Deployment
       metadata:
         name: db-deployment # Name of the object
-        namespace: default #db
+        namespace: db-namespace # default #db
         labels:
           app: db
           tier: database
@@ -105,11 +80,17 @@
           metadata:
             labels:
               app: db
+              namespace: db-namespace
               tier: database
           spec:
             containers:
             - name: mysql
               image: mysql:latest
+              resources:
+                limits:
+                  cpu: "300m"
+                requests:
+                  cpu: "250m"
               env: # The variables below could be set on a ConfigMap object
               - name: MYSQL_ALLOW_EMPTY_PASSWORD
                 value: "true"
@@ -139,12 +120,14 @@
       kind: Service
       metadata:
         name: db-service # Name of the object
-        namespace: default #db
+        namespace: db-namespace #default
         labels:
           app: db
+          namespace: db-namespace
           tier: database
       spec: # description of the characteristics of the resource
         type: ClusterIP    # Determina que este serviço pode ser acedido por outros pods do cluster
+        # externalName: db-service.db-namespace.svc.cluster.local
         selector: 
           app: db          # Service for objects label as db
         ports: 

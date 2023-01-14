@@ -16,3 +16,11 @@
      GOOGLE_CREDENTIALS: "{{ gcp_cred_file }}"
   roles:
     - ghost
+
+- name: Launch Dashboard
+  hosts: localhost
+  gather_facts: false
+  environment:
+     GOOGLE_CREDENTIALS: "{{ gcp_cred_file }}"
+  roles:
+    - monitoring

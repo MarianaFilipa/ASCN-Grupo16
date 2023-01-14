@@ -5,20 +5,14 @@
     api_version: v1
     kind: Namespace
     state: present
+    definition:
+      spec:
+        hard:
+          requests.cpu: 600m
+          limits.cpu: 700m
+          requests.mem: 500Mib
+          limits.memory: 600Mib
 
-# Create an static IP
-# - name: Create a static IP address Google Kubernetes Engine
-#   gcp_compute_address:
-#     name: ghost-ip-1
-#     address: "{{ ghost_ip }}"
-#     region:  us-central1
-#     state: present
-#     project: "{{ gcp_project }}"
-#     auth_kind: "{{ gcp_auth_kind }}"
-#     service_account_file: "{{ gcp_cred_file }}"
-#   #until: "cluster is not failed"
-#   #delay: 60
-#   #retries: 3
 
 - name: Create a Service object for Ghost
   kubernetes.core.k8s:
@@ -28,7 +22,7 @@
       kind: Service # Create an object swap service.
       metadata:
         name: ghost-service
-        namespace: default #ghost-namespace
+        namespace: ghost-namespace
         labels:
           app: ghost
       spec:
@@ -46,7 +40,7 @@
 # Wait for the load balancer to be active (add -n NameSpace after the name of the service if)
 
 - name: Wait for load balancer to have an external ip
-  shell: "kubectl get svc ghost-service -o wide --no-headers | awk '{print $4}'"
+  shell: "kubectl get svc ghost-service --namespace=ghost-namespace -o wide --no-headers | awk '{print $4}'"
   register: ip
   until: ip.stdout != '<pending>' # Repete até isto ser verdade
   retries: 10
@@ -72,7 +66,7 @@
       kind: Deployment
       metadata:
         name: ghost-deployment # Name of the object
-        namespace: default # ghost-namespace
+        namespace: ghost-namespace
         labels:
           app: ghost
       spec: # description of the characteristics of the resource: onde é definido o que este deployment object deverá ter
@@ -86,22 +80,29 @@
           metadata:
             labels:
               app: ghost
+              namespace: db-namespace
           spec:
             containers:
             - name: ghost
               image: ghost:5 
+              resources:
+                requests:
+                  cpu: "400m"
+                limits:
+                  cpu: "500m"
               env: # The variables below could be set on a ConfigMap object
               - name: database__client
                 value: mysql
               - name: database__connection__host # Create a database with this name
-                value: db-service                         # IP database => pod db-service
-                                                         # Porta a base de dados?
+                value: db-service.db-namespace                         # IP database => pod db-service
+                                                          # Porta a base de dados?
               - name: database__connection__user          # Create a user with this name
                 value: "{{ ghost_db_user }}"
               - name: database__connection__password      # The user will use this password
                 value: "{{ ghost_db_password }}"          # Use Secret object in real usage
               - name: database__connection__database      # Create a database with this name
                 value: "{{ ghost_db_name }}"
+              
               - name: url
                 value: "http://{{ ghost_ip }}:{{ ghost_port }}"
               
@@ -123,6 +124,7 @@
     kind: Pod
     label_selectors:
       - app = db
+      - namespace = db-namespace
       - tier in (database)
   register: pod_db
 
@@ -130,7 +132,7 @@
 
 - name: Wait for mysql tables to be created
   kubernetes.core.k8s_exec:
-    namespace: default
+    namespace: db-namespace
     pod: '{{ pod_db.resources[0].metadata.name }}'
     command: mysql '{{ ghost_db_name }}' -e "select * from users;"
   register: outGhost
@@ -142,7 +144,7 @@
 
 - name: Create Ghost Admin
   kubernetes.core.k8s_exec:
-    namespace: default
+    namespace: db-namespace
     pod: '{{ pod_db.resources[0].metadata.name }}'
     #container: manager
     #ascn123 = \$2b\$10\$IOPRnXn/t5QCPwKyrT/AfuK3grXM/MnjcNOeeHuQRlmY6cdECe1jS
@@ -157,7 +159,7 @@
       kind: HorizontalPodAutoscaler
       metadata:
         name: cpu-autoscale # name of the hpa
-        namespace: default
+        namespace: ghost-namespace
       spec:
         scaleTargetRef:
           apiVersion: apps/v1 # apiVersion of the object we want to scale

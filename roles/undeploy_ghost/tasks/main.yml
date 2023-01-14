@@ -3,7 +3,7 @@
   k8s:
     api_version: v1
     kind: Service
-    namespace: default
+    namespace: ghost-namespace
     name: ghost-service
     state: absent
 
@@ -11,7 +11,7 @@
   k8s:
     api_version: v1
     kind: Deployment
-    namespace: default
+    namespace: ghost-namespace
     name: ghost-deployment
     state: absent
 
@@ -19,7 +19,7 @@
   k8s:
     api_version: v1
     kind: Service
-    namespace: default
+    namespace: db-namespace
     name: db-service
     state: absent
 
@@ -27,6 +27,9 @@
   k8s:
     api_version: v1
     kind: Deployment
-    namespace: default
+    namespace: db-namespace
     name: db-deployment
     state: absent
+
+- name: Delete Dashboard
+  shell: gcloud monitoring dashboards delete 'Dashboard_namespace="default"'
