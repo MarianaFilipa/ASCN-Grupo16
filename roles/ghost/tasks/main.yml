@@ -115,7 +115,7 @@
               - name: mail__options__auth__user
                 value: "0ca2ad863b7f5b"
               - name: mail__options__auth__pass
-                value: "2e7dc632c7883a"
+                value: "{{ mail__pass }}"
               ports:
               - containerPort: 2368           # Container está exposto na porta 80
             
