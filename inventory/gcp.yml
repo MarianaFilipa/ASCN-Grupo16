@@ -12,11 +12,11 @@ all:
   gcp_image_type: ubuntu_containerd
   gcp_machine_type: e2-small          # Can be changed if necessary
   gcp_disk_size_gb: 100                # Can be changed if necessary
-  gcp_initial_node_count: 2            # Number of nodes to create. Can be changed if necessary
+  gcp_initial_node_count: 3            # Number of nodes to create. Can be changed if necessary
 
 
   # APP variables
-  ghost_ip: 34.28.84.51
+  ghost_ip: 35.232.251.41
   ghost_port: 80
 
   # Additional variables
