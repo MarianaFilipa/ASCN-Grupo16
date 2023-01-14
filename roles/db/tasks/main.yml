@@ -5,13 +5,13 @@
     api_version: v1
     kind: Namespace
     state: present
-    definition:
-      spec:
-        hard:
-          requests.cpu: 400m
-          limits.cpu: 500m
-          requests.mem: 500Mib
-          limits.memory: 600Mib
+    # definition:
+    #   spec:
+    #     hard:
+    #       requests.cpu: 300m
+    #       limits.cpu: 400m
+    #       requests.mem: 500Mib
+    #       limits.memory: 600Mib
   
 # PV: piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
 # storageclass.kubernetes.io/is-default-class ?

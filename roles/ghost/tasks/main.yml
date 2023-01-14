@@ -5,13 +5,13 @@
     api_version: v1
     kind: Namespace
     state: present
-    definition:
-      spec:
-        hard:
-          requests.cpu: 600m
-          limits.cpu: 700m
-          requests.mem: 500Mib
-          limits.memory: 600Mib
+    # definition:
+    #   spec:
+    #     hard:
+    #       requests.cpu: 700m
+    #       limits.cpu: 850m
+    #       requests.mem: 500Mib
+    #       limits.memory: 600Mib
 
 
 - name: Create a Service object for Ghost
@@ -87,9 +87,9 @@
               image: ghost:5 
               resources:
                 requests:
-                  cpu: "400m"
+                  cpu: "350m"
                 limits:
-                  cpu: "500m"
+                  cpu: "450m"
               env: # The variables below could be set on a ConfigMap object
               - name: database__client
                 value: mysql
@@ -115,7 +115,7 @@
               - name: mail__options__auth__user
                 value: "0ca2ad863b7f5b"
               - name: mail__options__auth__pass
-                value: "2e7dc632c7883a"
+                value: "{{ mail__pass }}"
               ports:
               - containerPort: 2368           # Container está exposto na porta 80
             
@@ -165,7 +165,7 @@
           apiVersion: apps/v1 # apiVersion of the object we want to scale
           kind: Deployment # type of the object we want to scale
           name: ghost-deployment # name of the deployment object to scale
-        maxReplicas: 10
+        maxReplicas: 3
         minReplicas: 1
         metrics: 
         - type: Resource

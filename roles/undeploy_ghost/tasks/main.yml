@@ -15,6 +15,14 @@
     name: ghost-deployment
     state: absent
 
+- name: Undeploy DB Deployment
+  k8s:
+    api_version: v1
+    kind: HorizontalPodAutoscaler
+    namespace: ghost-namespace
+    name: cpu-autoscale
+    state: absent
+
 - name: Undeploy DB Service
   k8s:
     api_version: v1
@@ -31,5 +39,5 @@
     name: db-deployment
     state: absent
 
-- name: Delete Dashboard
-  shell: gcloud monitoring dashboards delete 'Dashboard_namespace="default"'
+# - name: Delete Dashboard
+#   shell: gcloud monitoring dashboards delete 'Dashboard_namespace="default"'

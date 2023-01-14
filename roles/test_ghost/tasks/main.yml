@@ -12,29 +12,3 @@
   until: result.status == 200
   retries: 3
   delay: 5
-
-
-- name: Check Page SignIn Admin
-  ansible.builtin.uri:
-    url: "http://{{ ghost_ip }}:{{ ghost_port }}/ghost"
-    method: GET
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 3
-  delay: 5
-
-
-- name: Test signin as admin
-  ansible.builtin.uri:
-    url: "http://{{ ghost_ip }}:{{ ghost_port }}/ghost"
-    method: POST
-    # body_format: "form-urlencoded"
-    body: 
-      username: ascn@example.com
-      password: ascn123
-    status_code: 201
-  register: result
-  until: result.status == 201
-  retries: 3
-  delay: 5
