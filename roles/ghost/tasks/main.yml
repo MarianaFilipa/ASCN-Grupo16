@@ -88,8 +88,10 @@
               resources:
                 requests:
                   cpu: "350m"
+                  # memory: "150Mi"
                 limits:
                   cpu: "450m"
+                  # memory: "200Mi"
               env: # The variables below could be set on a ConfigMap object
               - name: database__client
                 value: mysql

@@ -15,7 +15,7 @@
     name: ghost-deployment
     state: absent
 
-- name: Undeploy DB Deployment
+- name: Undeploy Ghost AutoScaler
   k8s:
     api_version: v1
     kind: HorizontalPodAutoscaler
@@ -39,5 +39,8 @@
     name: db-deployment
     state: absent
 
-# - name: Delete Dashboard
-#   shell: gcloud monitoring dashboards delete 'Dashboard_namespace="default"'
+- name: Delete Dashboard
+  expect:
+    command: gcloud monitoring dashboards delete 'Custom Dashboard'
+    responses:
+      'You are about to delete dashboard [Custom Dashboard]\r\n\r\nDo you want to continue (Y/n)?': 'Y'

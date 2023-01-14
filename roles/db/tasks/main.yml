@@ -5,13 +5,6 @@
     api_version: v1
     kind: Namespace
     state: present
-    # definition:
-    #   spec:
-    #     hard:
-    #       requests.cpu: 300m
-    #       limits.cpu: 400m
-    #       requests.mem: 500Mib
-    #       limits.memory: 600Mib
   
 # PV: piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
 # storageclass.kubernetes.io/is-default-class ?
@@ -88,9 +81,11 @@
               image: mysql:latest
               resources:
                 limits:
+                  #memory: "128Mi"
                   cpu: "300m"
                 requests:
-                  cpu: "250m"
+                  #memory: "64Mi"
+                  cpu: "250m" 
               env: # The variables below could be set on a ConfigMap object
               - name: MYSQL_ALLOW_EMPTY_PASSWORD
                 value: "true"
