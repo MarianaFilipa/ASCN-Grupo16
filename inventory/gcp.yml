@@ -26,6 +26,8 @@ all:
   ghost_db_password: "{{ db_password }}"  #Careful this should be using VAULT!!!!
   #ghost_db_ip: "?"                      # bind ip for DB - Using Inventory file content
 
+  # MailTrap variables
+  mail_pass: "{{ mail__pass }}"
 
 # use kubectl exec -it <Pod Name> --mysqladimn --host = 0.0.0.0 --user = <user> --password <password> status
     # to check if database is avaliable.
