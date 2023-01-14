@@ -39,8 +39,8 @@
     name: db-deployment
     state: absent
 
-- name: Delete Dashboard
-  expect:
-    command: gcloud monitoring dashboards delete 'Custom Dashboard'
-    responses:
-      'You are about to delete dashboard [CustomDashboard]", "", "Do you want to continue (Y/n)?  ': 'Y'
+# - name: Delete Dashboard
+#   expect:
+#     command: gcloud monitoring dashboards delete 'Custom Dashboard'
+#     responses:
+#       'You are about to delete dashboard [CustomDashboard]", "", "Do you want to continue (Y/n)?  ': 'Y'
