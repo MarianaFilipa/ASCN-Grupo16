@@ -5,7 +5,7 @@
 Project developed for the course "Cloud Computing Applications and Services" of a Software Engineering Masters. The goal of this project was to automate the process of installing, configuring, monitoring and evaluating the application **Ghost**. For this project, we used Ansible to configure and install the application on Google Kubernetes Engine (GKE) and monitored the performance using Google Cloud Platform.
 
 
-## Componentes:
+## Components:
 
 * *create-gke-cluster.yml* : Create the GKE Cluster.
 
