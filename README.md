@@ -1,17 +1,20 @@
 # ASCN-Grupo16
 
+## Objectives:
+
+Project developed for the course "Cloud Computing Applications and Services" of a Software Engineering Masters. The goal of this project was to automate the process of installing, configuring, monitoring and evaluating the application **Ghost**. For this project, we used Ansible to configure and install the application on Google Kubernetes Engine (GKE) and monitored the performance using Google Cloud Platform.
+
+
 ## Componentes:
 
-* *create-gke-cluster.yml* : Cria o cluster Kubernetes
+* *create-gke-cluster.yml* : Create the GKE Cluster.
 
-* *destroy-gke-cluster.yml* : Elimina o cluster
+* *destroy-gke-cluster.yml* : Delete the GKE Cluster.
 
-* *deploy-ghost.yml* : Instala, configura e executar os componentes do Ghost no cluster criado antes.
+* *deploy-ghost.yml*: Install, configure and execute Ghost's components in the GKE created.
+   
+* *undeploy-ghost.yml*: Undeploy the Ghost's components created previously.
 
-    1) Instalação nova, ou instalação com dados
-    2) Instalação com os dados indicados
+    1. The data of the application is only deleted if the flag *-e delete data = true* is presented.
 
-* *undeploy-ghost.yml* : terminar a execução.\
-    1) só com flag *-e delete data = true* se apaga os dados
-
-* *test-all.yml* : Efetua um conjunto de testes automáticos
+* *test-all.yml*: Allows to execute a series of automatic tests.
