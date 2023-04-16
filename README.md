@@ -18,3 +18,13 @@ Project developed for the course "Cloud Computing Applications and Services" of 
     1. The data of the application is only deleted if the flag *-e delete data = true* is presented.
 
 * *test-all.yml*: Allows to execute a series of automatic tests.
+
+
+## Developed by:
+- [Cláudia Silva](https://github.com/Claudia54)
+- [Eduardo Magalhães](https://github.com/edumagalhaes10)
+- [Laura Rodrigues](https://github.com/Laura-Rodrigues)
+- [Mariana Rodrigues](https://github.com/MarianaFilipa)
+- [Rui Alves](https://github.com/ruipedrolousada)
+
+* **Project Grade**: 18
